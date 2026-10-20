@@ -680,3 +680,21 @@ dialog .tabs button:hover,
 .toast[hidden] {
     display: none !important;
 }
+
+/* Remove stray mini vertical scrollbar on .ref-tabs and .tabs */
+.ref-tabs,
+.tabs,
+.portal-shell .ref-tabs,
+.portal-shell .tabs {
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+.ref-tabs::-webkit-scrollbar,
+.tabs::-webkit-scrollbar,
+.portal-shell .ref-tabs::-webkit-scrollbar,
+.portal-shell .tabs::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+}
