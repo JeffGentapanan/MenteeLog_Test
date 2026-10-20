@@ -1972,9 +1972,6 @@ async function action(name,id,el){
     case 'logout': {
       document.querySelectorAll('details.profile-menu[open]').forEach(d => d.removeAttribute('open'));
       const activeUser = currentUser();
-      const userName = activeUser?.name && activeUser.name !== 'Supabase User' ? activeUser.name : (activeUser?.email ? activeUser.email.split('@')[0] : 'Portal User');
-      const userRole = activeUser?.role || 'Student';
-      const userInitials = initials(userName);
       modal.className = 'logout-confirm-dialog';
       modalOpener = document.activeElement;
       modalUserId = activeUser?.id || null;
@@ -1984,37 +1981,19 @@ async function action(name,id,el){
       };
       modal.innerHTML = `
         <div class="logout-modal-card">
-          <div class="logout-modal-accent"></div>
-          <button type="button" class="logout-modal-close" data-action="close" aria-label="Close dialog">
-            ${icon('close')}
-          </button>
-          <div class="logout-modal-content">
-            <div class="logout-icon-ring">
-              <div class="logout-icon-core">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                  <polyline points="16 17 21 12 16 7"/>
-                  <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-              </div>
-            </div>
-            <h2 id="modal-title" class="logout-modal-title">Sign out of MenteeLog?</h2>
-            <p class="logout-modal-desc">You will be returned to the public home page. Your active portal session and records remain safely synced.</p>
-            <div class="logout-user-pill">
-              <span class="logout-user-avatar">${e(userInitials)}</span>
-              <div class="logout-user-meta">
-                <strong>${e(userName)}</strong>
-                <span>${e(userRole)} Portal</span>
-              </div>
-            </div>
-            <form id="modal-form" class="logout-modal-actions">
-              <button type="button" class="btn secondary logout-btn-cancel" data-action="close">Stay Signed In</button>
-              <button type="submit" class="btn logout-btn-confirm">
-                <span>Sign Out</span>
-                <svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </button>
-            </form>
+          <div class="logout-modal-header">
+            <h2 id="modal-title">Sign out</h2>
+            <button type="button" class="logout-modal-close" data-action="close" aria-label="Close dialog">
+              ${icon('close')}
+            </button>
           </div>
+          <div class="logout-modal-body">
+            <p>Are you sure you want to sign out of your MenteeLog account? You can sign back in anytime.</p>
+          </div>
+          <form id="modal-form" class="logout-modal-footer">
+            <button type="button" class="btn secondary small logout-btn-cancel" data-action="close">Cancel</button>
+            <button type="submit" class="btn small logout-btn-confirm">Sign out</button>
+          </form>
         </div>
       `;
       modal.showModal();
