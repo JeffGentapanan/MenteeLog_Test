@@ -1829,8 +1829,8 @@ html, body {
     height: 38px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
-    transition: filter 0.3s ease;
+    filter: none !important;
+    box-shadow: none !important;
 }
 
 .public-site .reference-header nav {
@@ -2237,6 +2237,16 @@ html, body {
     }
     body.menu-open .public-site .reference-header {
         background: #FAF4E8 !important;
+    }
+    body.menu-open .public-site .reference-header .logo {
+        filter: none !important;
+        box-shadow: none !important;
+    }
+    body.menu-open .public-site .reference-header .header-actions .header-activate {
+        color: #58111A !important;
+        border: 1.5px solid rgba(88, 17, 26, 0.35) !important;
+        background: rgba(88, 17, 26, 0.04) !important;
+        box-shadow: none !important;
     }
     body.menu-open .public-site .reference-header nav a {
         font-size: 13.5px !important;
