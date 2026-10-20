@@ -42,7 +42,7 @@ function connectCoreUsers(dataDb) {
       stu.id = 's1';
     }
     stu.identifier = stu.identifier || '2021-00421';
-    stu.name = (stu.name && stu.name !== 'User' && stu.name !== 'Maria Santos') ? stu.name : 'kenzosomes';
+    stu.name = (stu.name && stu.name !== 'User' && stu.name !== 'Supabase User' && stu.name !== 'Maria Santos') ? stu.name : 'kenzosomes';
     stu.email = stu.email || 'kenzosomes@gmail.com';
     stu.role = 'Student';
     stu.status = 'Active';
@@ -80,7 +80,7 @@ function connectCoreUsers(dataDb) {
       sup.id = 'v1';
     }
     sup.identifier = sup.identifier || 'shisulzhin@gmail.com';
-    sup.name = (sup.name && sup.name !== 'User' && !sup.name.includes('Carlos Jose')) ? sup.name : 'shisuizhin';
+    sup.name = (sup.name && sup.name !== 'User' && sup.name !== 'Supabase User' && !sup.name.includes('Carlos Jose')) ? sup.name : 'shisuizhin';
     sup.email = sup.email || 'shisulzhin@gmail.com';
     sup.role = 'Supervisor';
     sup.status = 'Active';
@@ -105,7 +105,7 @@ function connectCoreUsers(dataDb) {
       coord.id = 'c1';
     }
     coord.identifier = coord.identifier || 'FAC-2026-001';
-    coord.name = (coord.name && coord.name !== 'User' && !coord.name.includes('Evelyn Ramos')) ? coord.name : 'jeff.gentapanan2004525';
+    coord.name = (coord.name && coord.name !== 'User' && coord.name !== 'Supabase User' && !coord.name.includes('Evelyn Ramos')) ? coord.name : 'jeff.gentapanan2004525';
     coord.email = coord.email || 'jeff.gentapanan2004525@gmail.com';
     coord.role = 'Coordinator';
     coord.status = 'Active';
@@ -1969,20 +1969,57 @@ async function action(name,id,el){
     case 'toggle-password':{const byId=el.dataset.id?document.getElementById(el.dataset.id):null;const input=(byId instanceof HTMLInputElement?byId:null)||el.parentElement?.querySelector('input')||$('#password');if(!input)return;input.type=input.type==='password'?'text':'password';el.setAttribute('aria-label',input.type==='password'?'Show password':'Hide password');return;}
     case 'forgot': recoveryActive = false; location.hash = '/forgot'; return;
       case 'login': recoveryActive = false; location.hash = '/login'; return;
-    case 'logout':
-      showModal('Confirm Sign Out', `
-        <div style="text-align:center; padding:12px 0 16px;">
-          <div style="width:48px;height:48px;border-radius:50%;background:#fee2e2;color:#b91c1c;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
-            <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;"><path d="M9 3H3v18h6 M9 12h12 m-5-5 5 5-5 5"/></svg>
-          </div>
-          <h3 style="margin:0 0 8px;font-size:18px;font-weight:600;color:var(--ink);">Are you sure you want to sign out?</h3>
-          <p style="margin:0;font-size:14px;color:var(--slate);">You will be returned to the public portal. Make sure you have saved any current work.</p>
-        </div>
-      `, () => {
+    case 'logout': {
+      document.querySelectorAll('details.profile-menu[open]').forEach(d => d.removeAttribute('open'));
+      const activeUser = currentUser();
+      const userName = activeUser?.name && activeUser.name !== 'Supabase User' ? activeUser.name : (activeUser?.email ? activeUser.email.split('@')[0] : 'Portal User');
+      const userRole = activeUser?.role || 'Student';
+      const userInitials = initials(userName);
+      modal.className = 'logout-confirm-dialog';
+      modalOpener = document.activeElement;
+      modalUserId = activeUser?.id || null;
+      modalSubmit = () => {
         logout();
         toast('You have successfully signed out.');
-      }, 'Sign Out');
+      };
+      modal.innerHTML = `
+        <div class="logout-modal-card">
+          <div class="logout-modal-accent"></div>
+          <button type="button" class="logout-modal-close" data-action="close" aria-label="Close dialog">
+            ${icon('close')}
+          </button>
+          <div class="logout-modal-content">
+            <div class="logout-icon-ring">
+              <div class="logout-icon-core">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </div>
+            </div>
+            <h2 id="modal-title" class="logout-modal-title">Sign out of MenteeLog?</h2>
+            <p class="logout-modal-desc">You will be returned to the public home page. Your active portal session and records remain safely synced.</p>
+            <div class="logout-user-pill">
+              <span class="logout-user-avatar">${e(userInitials)}</span>
+              <div class="logout-user-meta">
+                <strong>${e(userName)}</strong>
+                <span>${e(userRole)} Portal</span>
+              </div>
+            </div>
+            <form id="modal-form" class="logout-modal-actions">
+              <button type="button" class="btn secondary logout-btn-cancel" data-action="close">Stay Signed In</button>
+              <button type="submit" class="btn logout-btn-confirm">
+                <span>Sign Out</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      `;
+      modal.showModal();
       return;
+    }
     case 'student-delete-log': {
       if (confirm('Delete this test attendance entry?')) {
         db.logs = (db.logs || []).filter(l => l.id !== id);
